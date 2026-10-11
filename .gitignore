@@ -20,3 +20,7 @@ Thumbs.db
 # Required HTML/PDF submissions are intentionally not ignored.
 
 **/*.quarto_ipynb
+
+# Temporary files
+*.tmp
+
