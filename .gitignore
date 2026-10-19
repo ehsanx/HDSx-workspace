@@ -16,6 +16,7 @@ Thumbs.db
 # Secrets and local environment files
 .env
 .env.*
+.venv/
 
 # Required HTML/PDF submissions are intentionally not ignored.
 
