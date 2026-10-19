@@ -1,0 +1,6 @@
+metric,r_value,python_value,match,notes
+raw_row_count,105626,105626,TRUE,"Loaded CSV has 105626 rows; missing BMI values: 9356 in both languages"
+raw_column_count,18,18,TRUE,Loaded CSV has 18 columns in both languages
+filtered_row_count,50851,50851,TRUE,"Exclude missing BMI IncomeGroup Gender or Age; keep Age 20 through 80 inclusive"
+number_of_groups,6,6,TRUE,IncomeGroup by Gender
+rounded_summary_values,"High Income (>3.5) / Female: n=8073 mean=28.3 sd=7.0; High Income (>3.5) / Male: n=8257 mean=28.8 sd=5.6; Low Income (<1.3) / Female: n=8471 mean=30.5 sd=8.1; Low Income (<1.3) / Male: n=6822 mean=28.1 sd=6.4; Middle Income / Female: n=9954 mean=29.8 sd=7.5; Middle Income / Male: n=9274 mean=28.8 sd=6.2","High Income (>3.5) / Female: n=8073 mean=28.3 sd=7.0; High Income (>3.5) / Male: n=8257 mean=28.8 sd=5.6; Low Income (<1.3) / Female: n=8471 mean=30.5 sd=8.1; Low Income (<1.3) / Male: n=6822 mean=28.1 sd=6.4; Middle Income / Female: n=9954 mean=29.8 sd=7.5; Middle Income / Male: n=9274 mean=28.8 sd=6.2",TRUE,"n, mean BMI, and sample SD rounded to one decimal place; labels are IncomeGroup / Gender"

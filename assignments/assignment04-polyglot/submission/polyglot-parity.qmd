@@ -1,0 +1,132 @@
+---
+title: "Assignment 4: Polyglot Parity"
+format:
+  html:
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Purpose
+
+This report builds a trusted R summary of BMI by income group and gender, then
+provides the R results to compare with the Python/pandas translation in
+`translation.ipynb`. The analysis is descriptive and uses the cached classroom
+dataset.
+
+## Task 3: Load and inspect the data 
+
+```{r}
+library(tidyverse)
+
+nhanes <- read_csv(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  show_col_types = FALSE
+)
+
+tibble(
+  raw_row_count = nrow(nhanes),
+  raw_column_count = ncol(nhanes),
+  missing_bmi_count = sum(is.na(nhanes$BMI))
+)
+```
+
+## Task 4: Descriptive BMI summary by IncomeGroup and Gender
+
+Include adults ages 20 through 80, inclusive, with non-missing BMI,
+`IncomeGroup`, and `Gender`. The summary reports the number of observations,
+mean BMI, and sample standard deviation of BMI for each income and gender
+combination. Mean and standard deviation are rounded to one decimal place.
+
+```{r}
+nhanes_filtered <- nhanes |>
+  filter(
+    !is.na(BMI),
+    !is.na(IncomeGroup),
+    !is.na(Gender),
+    !is.na(Age),
+    Age >= 20,
+    Age <= 80
+  )
+
+bmi_summary_pipeline <- nhanes_filtered |>
+  group_by(IncomeGroup, Gender) |>
+  summarise(
+    n = n(),
+    mean_bmi = round(mean(BMI), 1),
+    sd_bmi = round(sd(BMI), 1),
+    .groups = "drop"
+  ) |>
+  arrange(IncomeGroup, Gender)
+
+bmi_summary_pipeline
+```
+
+## Task 5: Reusable R function
+
+The function below applies the same filters and summary steps to a data frame.
+
+Its output is checked against the pipeline before it is used for comparison.
+
+
+```{r}
+summarize_bmi_by_income_gender <- function(data) {
+  data |>
+    filter(
+      !is.na(BMI),
+      !is.na(IncomeGroup),
+      !is.na(Gender),
+      !is.na(Age),
+      Age >= 20,
+      Age <= 80
+    ) |>
+    group_by(IncomeGroup, Gender) |>
+    summarise(
+      n = n(),
+      mean_bmi = round(mean(BMI), 1),
+      sd_bmi = round(sd(BMI), 1),
+      .groups = "drop"
+    ) |>
+    arrange(IncomeGroup, Gender)
+}
+
+bmi_summary_function <- summarize_bmi_by_income_gender(nhanes)
+
+stopifnot(isTRUE(all.equal(bmi_summary_pipeline, bmi_summary_function)))
+
+bmi_summary_function
+```
+
+## R parity values
+
+Use these values to complete `parity-table.csv` after running the Python
+translation. The grouping labels are the `IncomeGroup` and `Gender` pairs in
+the summary table above.
+
+```{r}
+tibble(
+  raw_row_count = nrow(nhanes),
+  raw_column_count = ncol(nhanes),
+  filtered_row_count = nrow(nhanes_filtered),
+  number_of_groups = nrow(bmi_summary_function)
+)
+```
+
+For parity, Python must use the same inclusive age range and remove rows missing
+any of `BMI`, `IncomeGroup`, `Gender`, or `Age`. R's `sd()` and pandas'
+`Series.std()` both use the sample standard deviation by default. Compare group
+labels and the rounded mean and SD values, not just the overall row counts. If
+any values differ, record the likely cause in the parity table before changing
+either implementation.
+
+## Rendering
+
+From the repository root, render this report with:
+
+```sh
+quarto render assignments/assignment04-polyglot/submission/polyglot-parity.qmd
+```
+
+This creates `polyglot-parity.html`.
