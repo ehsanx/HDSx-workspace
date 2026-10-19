@@ -2,8 +2,12 @@
 
 ## Audit trail
 
-# AI prompt: Help me load the NHANES CSV in R.
-# AI output:
+### 1. Load and inspect the NHANES data
+
+**AI prompt:** Help me load the NHANES CSV in R.
+
+**AI output:**
+
 ```r
 library(tidyverse)
 
@@ -18,12 +22,21 @@ tibble(
   missing_bmi_count = sum(is.na(nhanes$BMI))
 )
 ```
-# Verified:
-- I clicked the Run Cell button and inspected the terminal output (105,626 rows).
-- I checked the code to double-check that the equity data was imported.
 
-# AI prompt: In R, help me produce a descriptive BMI summary by IncomeGroup and Gender. More specifically, I want to include adults ages 20 through 80, inclusive, with non-missing BMI, IncomeGroup, and Gender. The summary should report the number of observations, mean BMI, and sample standard deviation of BMI for each income and gender combination. Mean and standard deviation should be rounded to one decimal place.
-# AI output:
+**Verified:**
+
+- Ran the code and inspected the terminal output; it showed 105,626 rows.
+- Checked the code to confirm that it imported the NHANES equity data.
+
+### 2. Create the R BMI summary
+
+**AI prompt:** In R, produce a descriptive BMI summary by `IncomeGroup` and
+`Gender`. Include adults ages 20 through 80, inclusive, with non-missing BMI,
+`IncomeGroup`, and `Gender`. Report the number of observations, mean BMI, and
+sample standard deviation by group, rounded to one decimal place.
+
+**AI output:**
+
 ```r
 nhanes_filtered <- nhanes |>
   filter(
@@ -45,10 +58,17 @@ bmi_summary_pipeline <- nhanes_filtered |>
   ) |>
   arrange(IncomeGroup, Gender)
 ```
-# Verified: I ran the R code and confirmed the presence of a table with the expected columns and values.
 
-# AI prompt: Help me refactor the BMI summary code into a reusable R function that takes a data frame as input and returns the same summary. The function should apply the same filters and summary steps to the input data frame.
-# AI output:
+**Verified:** Ran the R code and confirmed the table had the expected columns
+and values.
+
+### 3. Refactor the R summary into a function
+
+**AI prompt:** Refactor the BMI summary into a reusable R function that takes a
+data frame and applies the same filters and summary steps.
+
+**AI output:**
+
 ```r
 summarize_bmi_by_income_gender <- function(data) {
   data |>
@@ -74,27 +94,62 @@ bmi_summary_function <- summarize_bmi_by_income_gender(nhanes)
 stopifnot(isTRUE(all.equal(bmi_summary_pipeline, bmi_summary_function)))
 bmi_summary_function
 ```
-# Verified: I ran the R code and confirmed that the output of the function matched the output of the original pipeline.
 
-# AI prompt: Please help me create `translation.ipynb`, which is a Jupyter notebook that contains the same analysis as the R code above. The notebook should include the same filters and summary steps, and should produce the same output as the R code, using pandas. The notebook should also include a reusable function that takes a DataFrame as input and returns the same summary.
-# AI output: `translation.ipynb` file created.
-# Verified:
-- I selected Run All in the `translation.ipynb` document and selected the Python 3.11.16 kernel.
-- My original note said that visual diagrams matched the R output; the notebook output is summary tables, which I compared with the R summary.
+**Verified:** Ran the function and confirmed its output matched the original
+pipeline.
 
-# AI prompt: Create `helpers.py` with at least one reusable Python helper called from the notebook.
-# AI output: Created `helpers.py` with a `summarize_bmi_by_income_gender()` function that takes a DataFrame and applies the same filters and summary steps.
-# Verified: In the notebook, I confirmed the helper is imported and called, then checked that its output matches the R summary.
+### 4. Translate the analysis to Python
 
-# AI prompt: Complete a parity table comparing row counts, filtered row counts, grouping labels, and rounded summary values.
-# AI output: Created `parity-table.csv`.
-# Verified: I double-checked that the parity-table format matched the template in `parity-table-template.csv` and compared the R and Python values.
+**AI prompt:** Create `translation.ipynb` with the same analysis as the R code,
+using pandas, the same filters, and the same summary steps. Include a reusable
+function that takes a DataFrame and returns the same summary.
+
+**AI output:** Created `translation.ipynb` to load the CSV, filter the records,
+and summarize BMI by income group and gender in Python.
+
+**Verified:**
+
+- Selected **Run All** and the Python 3.11.16 kernel.
+- Compared the notebook's summary tables with the R results. My original note
+  called these “visual diagrams”; they are summary tables.
+
+### 5. Create and use a Python helper
+
+**AI prompt:** Create `helpers.py` with at least one reusable Python helper
+called from the notebook.
+
+**AI output:** Created `summarize_bmi_by_income_gender()` in `helpers.py` to
+apply the same filters and summary steps to a DataFrame.
+
+**Verified:** Checked that the notebook imports and calls the helper, then ran
+the notebook and confirmed the grouped results.
+
+### 6. Complete the parity table
+
+**AI prompt:** Complete a parity table comparing row counts, filtered row
+counts, grouping labels, and rounded summary values.
+
+**AI output:** Created `parity-table.csv`.
+
+**Verified:** Compared the R and Python values and checked the table against the
+provided template.
 
 ## What AI helped with
-Copilot helped load and summarize the NHANES data in R, refactor the R summary into a function, translate the analysis to Python/pandas, create a reusable helper, and complete the parity table.
+
+Copilot helped load and summarize the NHANES data in R, refactor the R summary
+into a function, translate the analysis to Python/pandas, create a reusable
+helper, and complete the parity table.
 
 ## What I changed
-I kept the filters consistent in both languages: non-missing BMI, IncomeGroup, Gender, and Age, with ages 20 through 80 inclusive. I connected the notebook to `helpers.py` and recorded the grouped results and comparisons in the parity table.
+
+I kept the filters consistent in both languages: non-missing BMI,
+`IncomeGroup`, `Gender`, and `Age`, with ages 20 through 80 inclusive. I
+connected the notebook to `helpers.py` and recorded the grouped results and
+comparisons in the parity table.
 
 ## How I verified the result
-I rendered the Quarto report and ran the notebook code with the helper. Both versions returned 105,626 raw rows, 50,851 filtered rows, and six groups. I compared all group labels, counts, rounded means, and sample SDs; they matched.
+
+I rendered the Quarto report and ran the notebook code with the helper. Both
+versions returned 105,626 raw rows, 50,851 filtered rows, and six groups. I
+compared all group labels, counts, rounded means, and sample standard
+deviations; they matched.
