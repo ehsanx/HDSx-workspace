@@ -1,0 +1,18 @@
+
+
+AI Prompt: how do I do: In R, load the NHANES CSV with a relative path?
+
+AI Output: 
+```{r}
+library(tidyverse)
+
+nhanes <- read_csv(
+  "../../../examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  show_col_types = FALSE
+)
+
+dim(nhanes)
+```
+
+Verification: 
+
