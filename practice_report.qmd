@@ -1,6 +1,6 @@
 ---
 title: "My First Report"
-author: "Your Name"
+author: "Yvonne"
 format:
   html:
     embed-resources: true
@@ -41,3 +41,12 @@ hist(patients$age,
 
 When you are happy with the result, **commit and sync** your work (the Week 2
 course page walks you through this), then submit your repository link on Canvas.
+
+## My Notes
+
+- What I  learned today in class: I know new code language used in codespaces. The **2 `**` means bold the text i want**, and the 3 "`" with {} means build a code out of text. I also learned the quorto render the document to a new fromat. I need to remember committed what I chaged to the original document and push the changes to the folder.
+The easiest part is that render the document by following all proser doing in class. But because my computer uses different language, the instruction on my GitHub pages looks a little bit different and I need to remember the English of the botton I click to on my computer.
+
+```{r}
+summary(patients)
+```

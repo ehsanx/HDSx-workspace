@@ -1,0 +1,34 @@
+## Practice: First Plot
+
+```{r}
+3 + 3
+```
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+candidate_paths <- c(
+  "../../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(data_path)) {
+  stop("Could not find nhanes_equity_v6.csv")
+}
+
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+```
+
+```{r}
+ggplot(nhanes,aes(x = Age, y = Weight)) +
+    geom_point(alpha = 0.2) +
+    labs(
+        title = "Weight by age, NHANES Health Equity clasroom dataset",
+        subtitle = "One point per record; unweighted, descriptive only",
+        x = "Age (years)",
+        y = "Weight (kg)"
+    ) +
+    theme_minimal()
+```
+

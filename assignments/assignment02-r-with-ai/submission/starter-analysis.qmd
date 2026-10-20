@@ -1,0 +1,70 @@
+---
+title: "Assignment 2 Starter Analysis"
+format: html
+---
+
+## Setup
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)  # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+```
+
+## Load Data
+
+```{r}
+nhanes <- read_csv("examples/nhanes-equity/data/nhanes_equity_v6.csv", show_col_types = FALSE)
+```
+
+## Inspect
+
+```{r}
+dim(nhanes)
+names(nhanes)
+glimpse(nhanes)
+colSums(is.na(nhanes))
+```
+
+## Summarize
+
+How does BMI vary across gender?
+
+```{r}
+bmi_summary <- nhanes |>
+  filter(!is.na(BMI), !is.na(Gender)) |>
+  group_by (Gender) |>
+  summarise(
+    n = n(),
+    mean_bmi = mean(BMI),
+    sd_bmi = sd(BMI),
+    .groups = "drop"
+  )
+
+bmi_summary
+```
+
+## Function
+
+```{r}
+mean_sd_with_n <- function(x) {
+  tibble(
+    n = sum(!is.na(x)),
+    mean = mean(x, na.rm = TRUE),
+    sd = sd(x, na.rm = TRUE)
+  )
+}
+
+mean_sd_with_n(nhanes$BMI)
+```
+
+## Save Output
+
+```{r}
+dir.create("assignments/assignment02-r-with-ai/submission/output", recursive = TRUE, showWarnings = FALSE)
+write_csv(bmi_summary, "assignments/assignment02-r-with-ai/submission/output/summary_table.csv")
+```
+
+## AI Audit Note
+
+I used AI to help me modify and correct the BMI-by-gender summary code and examine custom features. I validated the AI-suggested code by running it in R and inspecting the resulting data, including variable names, data types, and missing values.
