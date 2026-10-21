@@ -1,0 +1,82 @@
+---
+title: "Assignment 2 Starter Analysis"
+format: html
+---
+
+## Setup
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)  # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+```
+
+## Load Data
+
+```{r}
+nhanes <- read_csv("examples/nhanes-equity/data/nhanes_equity_v6.csv", show_col_types = FALSE)
+```
+
+## Inspect
+
+```{r}
+dim(nhanes)
+names(nhanes)
+glimpse(nhanes)
+colSums(is.na(nhanes))
+```
+
+## Summarize
+
+Replace this example with your own summary if you choose a different question.
+
+```{r}
+# AI AUDIT: AI helped revise this dplyr workflow.
+# i verified that BMI and IncomeGroup exist in the dataset,
+# checked their missingness, and confirmed that incomplete observations
+# are explicitly removed before calculating mean BMI.
+
+bmi_summary <- nhanes |>
+  filter(!is.na(BMI), !is.na(IncomeGroup)) |>
+  group_by(IncomeGroup) |>
+  summarise(
+    n = n(),
+    mean_bmi = mean(BMI),
+    .groups = "drop"
+  ) |>
+  mutate(
+    mean_bmi = round(mean_bmi, 2)
+  )
+
+bmi_summary
+
+```
+
+## Function
+
+```{r}
+# AI AUDIT: AI suggested extending the starter function to include SD.
+# I verified that BMI is numeric and that missing values are handled
+# explicitly with na.rm = TRUE.
+
+mean_sd_with_n <- function(x) {
+  tibble(
+    n = sum(!is.na(x)),
+    mean = mean(x, na.rm = TRUE),
+    sd = sd(x, na.rm = TRUE)
+  )
+}
+
+mean_sd_with_n(nhanes$BMI)
+```
+
+## Save Output
+
+```{r}
+dir.create("assignments/assignment02-r-with-ai/submission/output", recursive = TRUE, showWarnings = FALSE)
+write_csv(bmi_summary, "assignments/assignment02-r-with-ai/submission/output/summary_table.csv")
+```
+
+## AI Audit Note
+
+All AI AUDITS are saved above where it was utilized.

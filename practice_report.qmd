@@ -1,6 +1,6 @@
 ---
 title: "My First Report"
-author: "Your Name"
+author: "Josh Mardik"
 format:
   html:
     embed-resources: true
@@ -37,7 +37,24 @@ hist(patients$age,
 ## Your turn
 
 - Add a sentence here describing what you notice in the chart.
+-The frequency is at its maximum from ages 40 to 70
+
 - Render again and check that both your sentence and the chart appear.
 
 When you are happy with the result, **commit and sync** your work (the Week 2
 course page walks you through this), then submit your repository link on Canvas.
+
+
+
+## My Note
+I learned how to change document types with in codespace. Along side this we were taught the difference between saving in cloud versus commiting a document for publishing
+
+```{r}
+# Code Chunk
+3 + 3
+```
+
+## Reflection
+-Easiest: Changing file types from Quatro to all others
+-Confusing: The differences between saving and commiting
+-Questions: None at the moment 
