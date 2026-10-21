@@ -18,8 +18,7 @@ The commit messages on this folder record each decision and its reasons.
 | `image/devcontainer.json` | Recipe for the course image: rocker's tidyverse image (R 4.6.1, by digest), Quarto 1.10.19 with TinyTeX, Python 3.11.17, and the local `course-packages` feature. |
 | `install-packages.sh` | R packages from the CRAN snapshot (2026-07-06), sess from the pinned vscode-R release, Python packages pinned by `constraints.txt`, and the `~/.Rprofile` settings. Runs at image build, and again in `setup.sh`, where it finds everything installed and takes seconds. |
 | `requirements.txt`, `constraints.txt` | The Python packages, and every version they resolve to (regenerate command in the header). |
-| `image/smoke-test.sh` | Runs inside each newly built image; any failure stops the push. |
-| `../.github/workflows/build-image.yml` | Manual workflow: builds, smoke-tests and pushes `ghcr.io/chendaniely/hdsx-workspace`, then reports the digest. |
+| `../.github/workflows/build-image.yml` | Manual workflow: builds the image, renders `practice_report.qmd` in it (HTML and Typst), and pushes it to `ghcr.io/chendaniely/hdsx-workspace` only if both renders work. |
 
 ## Changing a version
 
@@ -32,11 +31,25 @@ The commit messages on this folder record each decision and its reasons.
      `install-packages.sh`, then an image rebuild, because the image carries sess.
    - the CRAN snapshot date, the rocker image's build date (comment at its
      digest), and `--exclude-newer` in `constraints.txt`.
-3. Run **Actions → Build course image**, then paste the digest from the run's
-   summary into `"image"` in `devcontainer.json`. Keep the package public and
-   don't prune pinned versions: every student Codespace pulls it anonymously,
-   and a rebuild is not byte-identical.
-4. Test in a fresh Codespace in the browser, not only the smoke test.
+3. Run **Actions → Build course image**. It pushes tag `build-<run>-<attempt>`.
+   Pin the new image by its digest, not the tag: the digest (`sha256:…`) is
+   computed from the image's contents, so like a commit SHA it names exactly
+   one build, while a tag can move. Copy it from the
+   [package page](https://github.com/chendaniely/HDSx-workspace/pkgs/container/hdsx-workspace)
+   (or `docker buildx imagetools inspect ghcr.io/chendaniely/hdsx-workspace:<tag>`)
+   into `"image"` in `devcontainer.json`. Keep the package public and don't
+   prune pinned versions: every student Codespace pulls it anonymously, and a
+   rebuild is not byte-identical.
+4. Test in a fresh Codespace in the browser. The build only checks that the
+   report renders, so check by hand:
+   - **Run Cell** prints `[sess] Connected to VS Code` and its plot opens in an
+     R Plot tab;
+   - R typed into a new terminal starts with no error, and `hist(1:10)` opens a
+     plot tab;
+   - `getOption("repos")` in R shows the CRAN snapshot;
+   - **Quarto: Render Document** works for Render HTML, Render PDF (Typst) and
+     Render PDF (LaTeX);
+   - a `{python}` chunk with `import pandas` renders.
 
 ## What students see
 

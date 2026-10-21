@@ -1,14 +1,10 @@
 # 🤖 AI edit (Claude), 2026-10-20: this file.
-# Builds the SPPH 381H course image from .devcontainer/image/, tests it, and
-# pushes it to ghcr.io/<repository owner>/hdsx-workspace. Run it by hand:
-# Actions tab -> "Build course image" -> Run workflow. Then copy the digest
-# from the run's summary into "image" in .devcontainer/devcontainer.json.
-# Manual only, so it never runs on its own (in students' forks or anywhere).
-# Each run and re-run gets its own tag (build-<run>-<attempt>), so a re-run
-# never moves a tag that a pinned digest was taken from. Rebuilds are not
-# byte-identical (newer apt and TinyTeX files), which is why Codespaces pin
-# the digest: keep pinned versions in the registry, don't prune them. The
-# package must stay public: every student's Codespace pulls it anonymously.
+# Builds the course image from .devcontainer/image/, checks that it renders
+# the practice report, and pushes it to ghcr.io/<repository owner>/hdsx-workspace
+# as tag build-<run>-<attempt>. Run it by hand (Actions -> "Build course
+# image"), then pin the new digest: .devcontainer/README.md, "Changing a
+# version". Keep the package public (students pull it anonymously) and don't
+# prune old versions (pinned digests point at them).
 name: Build course image
 
 on:
@@ -22,9 +18,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    env:
-      IMAGE: ghcr.io/${{ github.repository_owner }}/hdsx-workspace
-      TAG: build-${{ github.run_number }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v7.0.1
 
@@ -40,42 +33,12 @@ jobs:
           cp .devcontainer/install-packages.sh .devcontainer/requirements.txt
           .devcontainer/constraints.txt .devcontainer/image/course-packages/
 
-      - name: Build, smoke-test, and push
+      # The push happens only if the render check passes.
+      - name: Build, check, and push
         uses: devcontainers/ci@v0.3.1900000450
         with:
           configFile: .devcontainer/image/devcontainer.json
-          imageName: ${{ env.IMAGE }}
-          imageTag: ${{ env.TAG }}
+          imageName: ghcr.io/${{ github.repository_owner }}/hdsx-workspace
+          imageTag: build-${{ github.run_number }}-${{ github.run_attempt }}
           push: always
-          runCmd: bash .devcontainer/image/smoke-test.sh
-
-  # devcontainers/ci pushes in its post step, at the end of the build job, so
-  # the pushed digest can only be read from a later job.
-  report:
-    needs: build
-    runs-on: ubuntu-24.04
-    permissions:
-      packages: read
-    env:
-      IMAGE: ghcr.io/${{ github.repository_owner }}/hdsx-workspace
-      TAG: build-${{ github.run_number }}-${{ github.run_attempt }}
-    steps:
-      - uses: docker/login-action@v4.6.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Report the digest to pin
-        run: |
-          set -euo pipefail
-          digest=$(docker buildx imagetools inspect "$IMAGE:$TAG" --format '{{json .Manifest}}' | jq -r .digest)
-          {
-            echo "### Course image built"
-            echo
-            echo "Put this in \"image\" in .devcontainer/devcontainer.json:"
-            echo
-            echo '```'
-            echo "$IMAGE@$digest"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          runCmd: quarto render practice_report.qmd && quarto render practice_report.qmd --to typst
