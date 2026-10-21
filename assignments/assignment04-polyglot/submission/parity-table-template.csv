@@ -1,0 +1,8 @@
+Record the following checks in a short Quarto note:
+
+Check	R command	Python command	What to record
+Raw row count	nrow(nhanes)	len(nhanes)	Same number of rows of 105626
+Column names	names(nhanes)	nhanes.columns.tolist()	Same expected variables of Cycle	BMI	Weight	Height	Waist	WeightMEC	Strata	PSU	Gender	Race	Education	Marital	Age	PIR	EducationClean	MaritalClean	IncomeGroup	WHtR
+Analysis rows after missingness filter	nrow(filter(nhanes, !is.na(BMI) is 9356 , !is.na(IncomeGroup) is 9415, !is.na(Gender)))	len(nhanes.dropna(subset=["BMI", "IncomeGroup", "Gender"]))	Same filtered row count
+Group count	nrow(r_summary)	len(py_summary)	Same number of grouped rows of 6
+Summary values	inspect mean_bmi and sd_bmi	inspect mean_bmi and sd_bmi	Values match after rounding of 25.64848 and 7.687052
