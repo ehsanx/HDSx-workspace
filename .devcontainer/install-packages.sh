@@ -2,25 +2,17 @@
 # -----------------------------------------------------------------------------
 # 🤖 AI edit (Claude), 2026-10-20: this file, split out of setup.sh.
 # Installs what the course adds to the rocker image: R packages, sess, Python
-# packages, and the ~/.Rprofile settings. The course image's build runs it once
-# (see .devcontainer/image/), so a Codespace starts with all of it in place.
-# setup.sh runs it again in every new Codespace, where it finds everything
-# installed and finishes in seconds. Safe to run any number of times.
-#
+# packages, and the ~/.Rprofile settings. The image build runs it once;
+# setup.sh runs it again in each Codespace, where it finds everything in place.
 # Like setup.sh, no `set -e`: one failed package should not hide the others.
-# The image build's smoke test is what catches a failure there.
 # -----------------------------------------------------------------------------
 set -uo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # 🤖 AI edit (Claude), 2026-10-20: this block and every use of CRAN_SNAPSHOT.
-# R packages come from Posit's CRAN snapshot of the day the base image was
-# built (see "image" in image/devcontainer.json), so every Codespace gets the
-# same versions, all of them consistent with the tidyverse already in the
-# image. The snapshot serves Linux binaries, so nothing compiles. ~/.Rprofile
-# points install.packages() at it too, so a package a student adds matches the
-# ones already installed. Python packages are pinned by constraints.txt,
-# resolved for the same date. Bump all three together.
+# Posit's CRAN snapshot (Linux binaries) of the day the rocker image was built,
+# so packages match its tidyverse; ~/.Rprofile points install.packages() at it
+# too. Bump it with the rocker image and constraints.txt (README).
 export CRAN_SNAPSHOT="https://p3m.dev/cran/__linux__/noble/2026-07-06"
 if ! grep -q 'CRAN snapshot' "$HOME/.Rprofile" 2>/dev/null; then
   cat >> "$HOME/.Rprofile" <<EOF
@@ -30,17 +22,12 @@ EOF
 fi
 
 # 🤖 AI edit (Claude), 2026-10-20: this block.
-# Only R started by vscode-R (Run Cell, or "R: Create R Terminal") connects to
-# VS Code; vscode-R marks those terminals with SESS_DISCOVERY_FILE. R typed by
-# hand into any other terminal is not connected, and its plots would go to an
-# empty Rplots.pdf. Instead, that R draws off-screen, and after each command
-# that started or changed a plot, saves it as a PNG and opens it in a VS Code
-# tab, which refreshes in place. (The plot.new/grid.newpage hooks catch a plot
-# redrawn identically after its tab was closed; the student's own current
-# device is restored after the PNG is written.) No message, no Rplots.pdf. The PNG lives in .r-plots/
-# inside the workspace, because VS Code asks before opening a file from outside
-# it; setup.sh keeps that folder out of commits. Rscript and Quarto renders are
-# not interactive, so they are unaffected.
+# R typed by hand (no SESS_DISCOVERY_FILE, which vscode-R sets in its own
+# terminals) is not connected to VS Code, so its plots would go to Rplots.pdf.
+# Instead it draws off-screen and, after each command that changed the plot,
+# opens it as a PNG tab. The page hooks catch an unchanged redraw. The PNG is
+# in .r-plots/ inside the workspace (VS Code asks before opening files from
+# outside it). Rscript and Quarto renders are not interactive: unaffected.
 if ! grep -q 'show_plots_in_vscode' "$HOME/.Rprofile" 2>/dev/null; then
   cat >> "$HOME/.Rprofile" <<'EOF'
 # Added by .devcontainer/install-packages.sh: show plots from R started by hand.
@@ -77,19 +64,16 @@ if (interactive() && Sys.getenv("TERM_PROGRAM") == "vscode" &&
 EOF
 fi
 
-# 🤖 AI edit (Claude), 2026-09-29, revised 2026-10-20: this block, its place
-# before the other packages, and the sess self-test line in setup.sh.
-# sess connects R terminals to the VS Code R extension, which is how plots and
-# View() reach the editor. vscode-R 3.2+ accepts only the sess built from its own
-# release. Any other copy gets an easily missed "Install bundled sess" pop-up,
-# and until someone clicks it, plots silently go to Rplots.pdf. r-universe builds
-# from vscode-R's main branch, which drifts from the release, so install the copy
-# inside the pinned release file, unless that exact build is already installed.
-# When bumping "REditorSupport.r@..." in devcontainer.json, bump these three:
-# the version, the sha256sum of the release's r-<version>.vsix, and the
-# Config/vscode-R/source-revision line of the sess DESCRIPTION inside it. Then
-# rebuild the image and re-pin its digest: the image carries sess, and without
-# a rebuild every new Codespace downloads the new sess at creation.
+# 🤖 AI edit (Claude), 2026-09-29, revised 2026-10-20: this block and the sess
+# self-test line in setup.sh.
+# sess connects R terminals to vscode-R (plots, View()). vscode-R 3.2+ accepts
+# only the sess from its own release; any other copy gets an easily missed
+# "Install bundled sess" pop-up, and plots go to Rplots.pdf until someone
+# clicks it. So install the copy inside the pinned release file (r-universe
+# builds from main, which drifts), unless that build is already installed.
+# Bumping "REditorSupport.r@...": update the version, the sha256sum of the
+# release's r-<version>.vsix, and the Config/vscode-R/source-revision line of
+# the sess DESCRIPTION inside it; then rebuild the image and re-pin it.
 export VSCODE_R_VERSION=3.2.0
 export VSCODE_R_SHA256=fbfd1dad22c5ab696750d201d4732ce30c032f22265d4efe2b220eb4361efd1e
 export VSCODE_R_SESS_REVISION=git-tree:25da80133148500e2fc25eff593f49674324022e

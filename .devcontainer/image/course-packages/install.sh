@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 # -----------------------------------------------------------------------------
 # 🤖 AI edit (Claude), 2026-10-20: this file.
-# Installs the course packages into the course image by running
-# .devcontainer/install-packages.sh, the same script setup.sh runs in a
-# Codespace. A feature only sees its own folder, so the build workflow copies
-# that script and its package lists in here first. It runs as the Codespace
-# user, so files end up owned exactly as a Codespace's own setup leaves them
-# (students can still add and update packages).
+# Runs .devcontainer/install-packages.sh into the course image, as the
+# Codespace user so students can still add and update packages. The build
+# workflow copies it in here first: a feature only sees its own folder.
 # -----------------------------------------------------------------------------
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

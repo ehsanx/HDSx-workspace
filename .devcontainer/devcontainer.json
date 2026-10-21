@@ -13,31 +13,18 @@
   "name": "SPPH 381H workspace (R + Quarto + Python)",
 
   // 🤖 AI edit (Claude), 2026-10-20: this "image" (was the rocker image plus
-  // the Quarto and Python features, built in every new Codespace).
-  // The course image: rocker's R 4.6.1 tidyverse image with Quarto 1.10.19
-  // (Typst built in), TinyTeX, Python 3.11.17, sess, and every course package
-  // already installed, built once by .github/workflows/build-image.yml from
-  // .devcontainer/image/. Starting from it skips the ~6-minute build (mostly
-  // compiling Python) and installs nothing at Codespace creation. Pinned by
-  // digest: to change any version, edit .devcontainer/image/,
-  // install-packages.sh, or requirements.txt/constraints.txt, run the
-  // workflow, and paste the digest from its summary here.
+  // the Quarto and Python features, built in every new Codespace). The course
+  // image has everything preinstalled; see .devcontainer/README.md.
   "image": "ghcr.io/chendaniely/hdsx-workspace@sha256:5ef00ad78e12d8d58ad00c9a0b5545b436bfc2ac33db9c45d1df9ebb2d75373e",
 
   "customizations": {
     "vscode": {
       // 🤖 AI edit (Claude), 2026-10-20: the six version pins below.
-      // An extension installed at a stated version does not auto-update, and
-      // it wins over the unpinned copy the image's own metadata asks for
-      // (checked in fresh Codespaces), so the whole term runs on these
-      // releases (no pre-release builds). vscode-R must match the sess that
-      // install-packages.sh installs from the same release: bump both
-      // together, then rebuild the image, which carries sess. r-syntax is a
-      // dependency vscode-R 3.x pulls in.
-      // The Python, Jupyter and Copilot extensions stay unpinned on purpose:
-      // they use VS Code's proposed APIs, which change between VS Code
-      // releases, and Codespaces always runs the newest VS Code, so an old
-      // pinned copy could stop loading.
+      // An extension installed at a stated version does not auto-update, so
+      // the whole term runs on these releases (no pre-release builds). vscode-R
+      // must match the sess in the course image: bump both together, then
+      // rebuild the image. r-syntax is a dependency vscode-R 3.x pulls in.
+      // Python, Jupyter and Copilot stay unpinned (README: Extensions).
       "extensions": [
         "quarto.quarto@1.138.0",
         "REditorSupport.r@3.2.0",
@@ -47,25 +34,13 @@
         "GitHub.copilot",
         "GitHub.copilot-chat",
         "mechatroner.rainbow-csv@3.24.1",
-        // 🤖 AI edit (Claude), 2026-10-20: the viewer below.
-        // Clicking a rendered .html in the Explorer opens it in an editor tab,
-        // read straight from disk. Unlike the Quarto preview pane, it uses no
-        // forwarded port, so it works in the browser client; plotly, DT and
-        // revealjs run (tested in a Codespace). It does not refresh after a
-        // re-render: close the tab and click the file again.
+        // 🤖 AI edit (Claude), 2026-10-20: the two viewers below. Clicking a
+        // rendered .html or .pdf opens it in a tab (README: HTML viewers, PDF
+        // viewers).
         "analytic-signal.preview-html@1.0.0",
-        // 🤖 AI edit (Claude), 2026-10-20: the PDF viewer below.
-        // Clicking a .pdf (e.g. a Typst render) opens it in a tab (tested in a
-        // Codespace). VS Code has no built-in PDF viewer. The others fail in
-        // the browser client: tomoki1207.pdf is UI-only (no web build), and
-        // AdamRaichu.pdf-viewer never finishes loading on first open and is
-        // very slow after that. Cost: a one-time donation notice in each new
-        // Codespace, with no setting to turn it off.
         "mathematic.vscode-pdf@0.2.6",
-        // 🤖 AI edit (Claude), 2026-10-20: the line below.
-        // Leave out R Debugger, which the rocker image adds: unused in the
-        // course, and after a window reload it pops up a warning about the
-        // "legacy r.path" setting.
+        // 🤖 AI edit (Claude), 2026-10-20: leave out R Debugger, which the
+        // rocker image adds (README: Extensions).
         "-RDebugger.r-debugger"
       ],
       "settings": {
@@ -76,24 +51,10 @@
         // default (httpgd) embeds a forwarded port, which the Codespaces
         // browser client shows as a blank pane.
         "r.plot.backend": "standard",
-        // Preview still renders but opens nothing. 🤖 AI edit (Claude),
-        // 2026-10-20: why, as measured in the browser client with Quarto
-        // extension 1.138.0:
-        // - "internal": the side pane frames the forwarded port, whose GitHub
-        //   sign-in cannot load in a frame, so it stays blank.
-        // - "external": the tab opens after the render, not on a click, so
-        //   the browser blocks it as a pop-up; when allowed, Codespaces drops
-        //   the path and it lands on "/", which quarto preview leaves "Not
-        //   Found" once _quarto.yml exists.
-        // - Setting VSCODE_PROXY_URI makes Quarto print the full forwarded
-        //   URL, but then the extension never sees the localhost URL it waits
-        //   for, and opens nothing at all.
-        // Rendered HTML and PDF are viewed in tabs (the viewer extensions
-        // above) instead; slides to present or print go to the student's own
-        // browser via right-click -> Download. (A browser tab on the preview
-        // port does
-        // live-reload, but no port is forwarded (otherPortsAttributes below)
-        // and the port changes with every preview.)
+        // Preview still renders on save but opens nothing: its side pane comes
+        // up blank for the same reason, and its browser tab lands on "Not
+        // Found". 🤖 AI edit (Claude), 2026-10-20: rendered files open in a
+        // tab instead (viewers above; README: Quarto's own preview).
         "quarto.render.previewType": "none",
         // 🤖 AI edit (Claude), 2026-10-20: the setting below.
         // Run Cell goes straight to a plain R terminal. Otherwise vscode-R 3.2
@@ -106,28 +67,17 @@
   },
 
   // Runs once after the container is built. Checks the course packages (the
-  // image already has them; anything added to the lists since the image was
-  // built installs here) and self-tests the toolchain. The leading sed strips
-  // stray carriage returns so the scripts run even if a file was copied
-  // without git's line-ending normalization (.gitattributes).
+  // image already has them) and self-tests the toolchain. The leading sed strips
+  // stray carriage returns so the scripts run even if a file was copied without
+  // git's eol=lf handling.
   "postCreateCommand": "sed -i 's/\\r$//' .devcontainer/setup.sh .devcontainer/install-packages.sh && bash .devcontainer/setup.sh",
-  // 🤖 AI edit (Claude), 2026-10-20: this setting.
-  // Keep the editor closed until setup.sh finishes (seconds with the course
-  // image; longer only if the package lists are newer than the image), so no
-  // one can start R before its packages and sess are in.
+  // 🤖 AI edit (Claude), 2026-10-20: this setting. The editor opens only once
+  // setup.sh is done, so no one starts R before its packages and sess are in.
   "waitFor": "postCreateCommand",
 
   // 🤖 AI edit (Claude), 2026-10-20: this setting, and the removal of the
-  // port-8000 "Rendered reports" server added 2026-09-29 (forwardPorts,
-  // portsAttributes, postAttachCommand). Clicking a rendered .html or .pdf now
-  // opens it in a tab, and right-click -> Download covers slides to present or
-  // print, so the server, its terminal, and its "Make Public" risk (it served
-  // the whole workspace, .git included) are gone.
-  // The Preview button (quarto preview) starts a server on a random port, and
-  // R opens ports of its own. Forwarded, each one pops up "Your application ... is
-  // available" (with "Make Public", which would expose the workspace) and
-  // adds a Ports-tab row whose globe icon lands on "Not Found" or a blank
-  // page. Nothing students use needs them, so no port is forwarded.
+  // port-8000 server. No port is forwarded: each one popped up "Open in
+  // Browser" and "Make Public" and led nowhere useful (README: Ports).
   "otherPortsAttributes": { "onAutoForward": "ignore" },
 
   "hostRequirements": {

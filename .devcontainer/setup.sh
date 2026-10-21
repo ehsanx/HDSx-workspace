@@ -32,16 +32,12 @@ echo "=========================================================="
 echo "⏳ SETUP IN PROGRESS: checking the course packages (seconds)."
 echo "=========================================================="
 
-# 🤖 AI edit (Claude), 2026-10-20: this block (the installs moved to
-# install-packages.sh, which the course image's build also runs).
-# In a Codespace made from the course image everything is already installed,
-# so this finishes in seconds.
+# 🤖 AI edit (Claude), 2026-10-20: the installs moved to install-packages.sh,
+# which the image build also runs; here it finds them done in seconds.
 bash .devcontainer/install-packages.sh
 
-# 🤖 AI edit (Claude), 2026-10-20: this block.
-# R typed by hand saves its plots to .r-plots/ in the workspace (see
-# install-packages.sh). Keep that folder out of commits without touching the
-# student's .gitignore, so syncing the fork never conflicts.
+# 🤖 AI edit (Claude), 2026-10-20: keep .r-plots/ (see install-packages.sh) out
+# of commits without touching the student's .gitignore.
 if [ -d .git ] && ! grep -qx '/.r-plots/' .git/info/exclude 2>/dev/null; then
   echo '/.r-plots/' >> .git/info/exclude
 fi
