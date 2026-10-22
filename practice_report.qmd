@@ -1,6 +1,6 @@
 ---
 title: "My First Report"
-author: "Your Name"
+author: "jianing li"
 format:
   html:
     embed-resources: true
@@ -23,6 +23,7 @@ shows the first few rows.
 ```{r}
 patients <- read.csv("data/patients.csv")
 head(patients)
+
 ```
 
 ## A first chart
@@ -41,3 +42,14 @@ hist(patients$age,
 
 When you are happy with the result, **commit and sync** your work (the Week 2
 course page walks you through this), then submit your repository link on Canvas.
+
+## My note
+
+- **What I learned:**:  use github to store the changes each time we change our code. 
+Code will be staged and commited to the github from the VS code, 
+and then we push the commit, there will be our changes on the github.This process is called version control
+
+```{r}
+class(patients$diabetes)
+summary(patients)
+```

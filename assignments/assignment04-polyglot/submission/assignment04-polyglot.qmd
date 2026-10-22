@@ -1,0 +1,67 @@
+---
+title: "ASSIGNMENT 4"
+author: "Jasmine Li"
+format: html
+---
+
+
+## Load Data
+
+Replace the example path below with the location of your data file.
+
+```{r}
+library(tidyverse)
+
+nhanes <- read_csv("examples/nhanes-equity/data/nhanes_equity_v6.csv")
+
+r_summary <- nhanes |>
+  filter(!is.na(BMI), !is.na(IncomeGroup), !is.na(Gender)) |>
+  group_by(IncomeGroup, Gender) |>
+  summarise(
+    n = n(),
+    mean_bmi = round(mean(BMI), 2),
+    sd_bmi = round(sd(BMI), 2),
+    .groups = "drop"
+  ) |>
+  arrange(IncomeGroup, Gender)
+
+r_summary
+```
+
+here is the summary of the mean and standard deviation of the features in nhanes data set
+```{r}
+summarise_mean_sd <- function(data, value, group1, group2) {
+  data |>
+    filter(!is.na({{ value }}), !is.na({{ group1 }}), !is.na({{ group2 }})) |>
+    group_by({{ group1 }}, {{ group2 }}) |>
+    summarise(
+      n = n(),
+      mean_value = round(mean({{ value }}), 2),
+      sd_value = round(sd({{ value }}), 2),
+      .groups = "drop"
+    ) |>
+    arrange({{ group1 }}, {{ group2 }})
+}
+
+r_function_summary <- summarise_mean_sd(nhanes, BMI, IncomeGroup, Gender)
+r_function_summary
+
+```
+```{r}
+mean(nhanes$BMI, na.rm = TRUE)
+sd(nhanes$BMI, na.rm = TRUE)
+```
+
+
+
+
+here is a summary of the number of rows and missing bmi and income values
+
+```{r}
+nhanes |>
+  summarise(
+    rows = n(),
+    missing_bmi = sum(is.na(BMI)),
+    missing_income = sum(is.na(IncomeGroup))
+  )
+```
