@@ -1,0 +1,15 @@
+---
+title: "Polyglot Parity"
+format: html
+---
+
+```{r}
+library(tidyverse)
+
+nhanes <- read_csv(
+  "../../../examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  show_col_types = FALSE
+)
+
+dim(nhanes)
+```

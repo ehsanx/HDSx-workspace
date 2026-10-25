@@ -1,0 +1,9 @@
+Gender,BMI_category,participant_count,mean_age
+Female,Healthy weight,8599,47.48575415746017
+Female,Obesity,12065,50.055035225859925
+Female,Overweight,8710,51.163145809414466
+Female,Underweight,576,44.22569444444444
+Male,Healthy weight,7384,47.931473456121346
+Male,Obesity,9078,50.61764705882353
+Male,Overweight,10545,51.78937885253675
+Male,Underweight,343,46.37609329446064

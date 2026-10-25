@@ -1,8 +1,8 @@
 ---
 title: "My First Report"
-author: "Your Name"
-format:
-  html:
+author: "Sky Ng"
+format:  
+  html: 
     embed-resources: true
 ---
 
@@ -34,10 +34,28 @@ hist(patients$age,
      col  = "steelblue")
 ```
 
-## Your turn
+## Your turn 
 
-- Add a sentence here describing what you notice in the chart.
-- Render again and check that both your sentence and the chart appear.
+### Data Table Analysis
+- The data table shows us the health and basic information of 6 humans
+- Information Provided: id, age, sex, region, systolic_bp and diabetes
+
+### Chart Analysis
+- The chart represents the age distribution of practise patients
+- Age (years) is the X axis heading, and frequency is the Y axis heading
+- The age ranges with the highest frequency are: 40-50, 50-60 and 60-70
+- the age range with the lowest frequency is 70-80
 
 When you are happy with the result, **commit and sync** your work (the Week 2
 course page walks you through this), then submit your repository link on Canvas.
+
+## My Notes: What I have learnt
+- syntax for markdown documents: such as how to **bold**, *italicize* and create lists
+- how to embed a section that runs R code, and relating R functions (e.g summary())
+- the process of rendering markdown files into HTML and PDFs, and how to download it
+
+## One Small R Calculation
+```{r}
+result <- 5 + 10
+print(result)
+```
