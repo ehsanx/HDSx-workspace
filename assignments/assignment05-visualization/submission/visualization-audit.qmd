@@ -1,0 +1,63 @@
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+candidate_paths <- c(
+  "C:/Users/analyst/Desktop/nhanes_equity_v6.csv",
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(data_path)) {
+  stop("Could not find nhanes_equity_v6.csv")
+}
+
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+
+nhanes
+```
+
+```{r}
+cycle_levels <- sort(unique(nhanes$Cycle))
+endpoint_cycles <- c(cycle_levels[1], cycle_levels[length(cycle_levels)])
+
+flawed_summary <- nhanes |>
+  filter(!is.na(BMI), !is.na(IncomeGroup), Cycle %in% endpoint_cycles) |>
+  group_by(Cycle, IncomeGroup) |>
+  summarise(
+    n = n(),
+    mean_bmi = mean(BMI),
+    .groups = "drop"
+  ) |>
+  filter(n >= 30)
+
+print(flawed_summary)
+```
+
+```{r}
+corrected_plot <- ggplot(
+  flawed_summary,
+  aes(x = Cycle, y = mean_bmi, color = IncomeGroup, group = IncomeGroup)
+) +
+  geom_point(size = 3) +
+  geom_line(linetype = "dashed", linewidth = 1) +
+  expand_limits(y = 0) +
+  labs(
+    title = "rising mean obesity in American adults is associated with Low income ",
+    subtitle = "Adults age 20-80: BMI climbed steadily across NHANES cycle",
+    x = "NHANES cycle",
+    y = "MEAN BMI",
+    color = "Income",
+    caption = "Records with missing BMI, income, or cycle excluded; groups under n = 30 removed.\nDescriptive only, not a causal or population estimate."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
+
+
+print(corrected_plot)
+```
+```{r}
+ggsave("corrected-plot.png", corrected_plot, width = 7, height = 5)
+```
