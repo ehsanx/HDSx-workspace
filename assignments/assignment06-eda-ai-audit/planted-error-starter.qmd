@@ -34,6 +34,12 @@ analysis_df <- nhanes |>
   filter(Age > 20, Age < 80) |>
   na.omit()
 ```
+```{r}
+#| label: planted-cohort
+analysis_df <- nhanes |>
+  filter(Age > 20, Age < 80, Age==20, Age==80) |>
+  na.omit()
+```
 
 ## Table 1
 
