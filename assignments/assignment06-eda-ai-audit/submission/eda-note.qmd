@@ -62,6 +62,8 @@ table1 <- analysis_df |>
   )
 
 kable(table1)
+
+write_csv(table1, "output/table1.csv")
 ```
 
 # Methods Note
