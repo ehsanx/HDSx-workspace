@@ -1,0 +1,3 @@
+# Provenance Stewardship Note
+
+The dataset is a prepared classroom snapshot derived from public-use NHANES files at the CDC, cached in the course repository for offline classroom use. It supports descriptive learning activities only — not individual-level inference, small-cell claims, or upload of row-level records to external AI tools.
