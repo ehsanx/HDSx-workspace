@@ -1,0 +1,4 @@
+IncomeGroup,N,"BMI, mean (SD)","Age, mean (SD)"
+High Income (>3.5),13696,28.5 (6.2),48.8 (15.7)
+Low Income (<1.3),13374,29.2 (7.2),46.5 (17.9)
+Middle Income,16432,29.1 (6.7),49.1 (18.2)

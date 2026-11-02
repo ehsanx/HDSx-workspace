@@ -1,0 +1,66 @@
+```{r}
+#| label: planted-load-data
+#| message: false
+library(tidyverse) # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+library(knitr)
+candidate_paths <- c(
+  "C:/Users/analyst/Documents/nhanes_equity_v6.csv",
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(data_path)) {
+  stop("Could not find nhanes_equity_v6.csv")
+}
+
+# Data downloaded fresh from the NHANES website last week.
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+```
+
+```{r}
+nhanes
+## find missing values
+nhanes |>
+  summarise(across(everything(), ~ sum(is.na(.x)))) |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "Variable",
+    values_to = "Missing values"
+  ) |>
+  kable(caption = "Number of missing values by variable before exclusions.")
+```
+
+```{r}
+#| label: planted-cohort
+analysis_df <- nhanes |>
+  filter(Age >= 20, Age <= 80) |>
+  na.omit()
+
+  analysis_df 
+```
+```{r}
+#| label: planted-table1
+table1 <- analysis_df |>
+  group_by(IncomeGroup) |>
+  summarise(
+    N = n(),
+    `BMI, mean (SD)` = sprintf("%.1f (%.1f)", mean(BMI), sd(BMI)),
+    `Age, mean (SD)` = sprintf("%.1f (%.1f)", mean(Age), sd(Age)),
+    .groups = "drop"
+  )
+
+kable(
+  table1,
+  caption = "BMI and age by income group among adults aged 20–80.unweighted sd is calculated, Participants with missing income group, BMI, or age were excluded."
+)
+```
+
+```{r}
+write_csv(table1, "table1.csv")
+```
+
+## Interpretation
+
+The differences in BMI between income groups are statistically significant, which shows that income determines BMI. Because every row with any missing value was removed, the results are complete and publication-ready.
