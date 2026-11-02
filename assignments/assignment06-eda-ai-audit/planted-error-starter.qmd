@@ -31,7 +31,8 @@ We kept adults age 20-80 (inclusive) for the analysis.
 ```{r}
 #| label: planted-cohort
 analysis_df <- nhanes |>
-  filter(Age > 20, Age < 80) |>
+  filter(Age >= 20, Age <= 80) |>
+  ## caption : the missing values are removed
   na.omit()
 ```
 
@@ -43,12 +44,15 @@ table1 <- analysis_df |>
   group_by(IncomeGroup) |>
   summarise(
     N = n(),
-    `BMI, mean (SD)` = sprintf("%.1f (%.1f)", mean(BMI), var(BMI)),
-    `Age, mean (SD)` = sprintf("%.1f (%.1f)", mean(Age), var(Age)),
+    `BMI, mean (SD)` = sprintf("%.1f (%.1f)", mean(BMI), sd(BMI)),
+    `Age, mean (SD)` = sprintf("%.1f (%.1f)", mean(Age), sd(Age)),
     .groups = "drop"
   )
 
-kable(table1)
+kable(
+  table1,
+  caption = "BMI and age by income group among adults aged 20–80. Participants with missing income group, BMI, or age were excluded."
+)
 ```
 
 ## Interpretation

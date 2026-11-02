@@ -23,12 +23,15 @@ nhanes <- read_csv(data_path, show_col_types = FALSE)
 cycle_levels <- sort(unique(nhanes$Cycle))
 endpoint_cycles <- c(cycle_levels[1], cycle_levels[length(cycle_levels)])
 
+# BMI AND IncomeGroup column has missing values, which is filtered here
 flawed_summary <- nhanes |>
   filter(!is.na(BMI), !is.na(IncomeGroup), Cycle %in% endpoint_cycles) |>
   group_by(Cycle, IncomeGroup) |>
   summarise(
+    
     mean_bmi = mean(BMI),
     .groups = "drop"
+    
   )
 
 flawed_plot <- ggplot(
@@ -37,12 +40,12 @@ flawed_plot <- ggplot(
 ) +
   geom_point(size = 3) +
   geom_line(linetype = "dashed", linewidth = 1) +
-  scale_y_continuous(limits = c(24, 28)) +
+  expand_limits(y = 0) +
   labs(
     title = "Low income drives rising obesity in American adults",
     subtitle = "Adults age 20-80: BMI climbed steadily across every NHANES cycle",
     x = "NHANES cycle",
-    y = "BMI",
+    y = "MEAN BMI",
     color = "Income"
   ) +
   theme_minimal(base_size = 12)
