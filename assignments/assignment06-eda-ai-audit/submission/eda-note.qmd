@@ -1,0 +1,65 @@
+# Cohort Definition
+```{r}
+
+library(tidyverse) 
+library(knitr)
+
+candidate_paths <- c("examples/nhanes-equity/data/nhanes_equity_v6.csv")
+
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(data_path)) {
+stop ("Could not find examples/nhanes-equity/data/nhanes_equity_v6.csv")
+}
+
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+```
+
+# Missingness Table
+```{r}
+cohort_df <- nhanes |>
+filter(Age >= 20, Age <=80)
+
+cohort_cts <- tibble(
+step = c("Prepared CSV rows", "Rows after age 20-80 restriction"),
+n = c (nrow(nhanes), nrow(cohort_df)))
+
+kable(cohort_cts)
+```
+
+```{r}
+key_vrs <- c ("BMI", "Age", "IncomeGroup", "Gender", "Race", "Cycle")
+
+missingness <- tibble(variable = key_vrs) |>
+mutate(missing_n = vapply(cohort_df[key_vrs],function(x) sum(is.na(x)), numeric(1)),
+missing_percent = round(100 * missing_n / nrow(cohort_df), 1)
+)
+
+kable(missingness)
+```
+
+# Table 1
+```{r}
+mean_sd <- function(x) {
+sprintf("%.1f (%.1f)", mean(x, na.rm = TRUE), sd(x, na.rm = TRUE))
+}
+
+table1 <- cohort_df |>
+filter (!is.na(IncomeGroup)) |>
+group_by(IncomeGroup) |>
+summarise(
+N = n(),
+`BMI, mean (SD)` = mean_sd(BMI),
+`Age, mean (SD)` = mean_sd(Age),
+.groups = "drop"
+)
+
+write_csv(
+table1,
+"assignments/assignment06-eda-ai-audit/submission/table1.csv"
+)
+
+kable (table1)
+```
+
+# Methods Note
+# I used the prepared NHANES Health Equity classroom CSV snapshot. The analysis cohort included records with age 20-60. I summarized BMI and age by income group using unweighted descriptive statistics. Missing values were checked before summarizing. These summaries describe the prepared class dataset and should not be interpreted as causal effects or population estimates.

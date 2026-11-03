@@ -1,0 +1,57 @@
+---
+title: "Assignment 2 Starter Analysis"
+format: html
+---
+
+## Setup
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)  # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+```
+
+## Load Data
+# I asked AI to read the CSV file and it generated the following code. I verified that the file path is correct and that the data loads without errors.
+```{r}
+my_data <- read_csv("examples/nhanes-equity/data/nhanes_equity_v6.csv", show_col_types = FALSE)
+```
+
+## Inspect
+
+```{r}
+dim(my_data)
+names(my_data)
+glimpse(my_data)
+colSums(is.na(my_data))
+```
+
+## Summarize
+
+Replace this example with your own summary if you choose a different question.
+
+```{r}
+education_summary <- my_data |>
+  filter(!is.na(BMI), !is.na(Weight), !is.na(Waist), !is.na(Education), !is.na(Marital), !is.na(PIR), !is.na(EducationClean), !is.na(MaritalClean), !is.na(WHtR)) |>
+  group_by(Education) |>
+  select(BMI, Weight, Waist, Education, Marital, PIR, EducationClean, MaritalClean, WHtR)
+
+education_summary
+```
+
+## Function
+
+```{r}
+BMI_mean <- mean(my_data$BMI, na.rm = TRUE)
+```
+
+## Save Output
+
+```{r}
+dir.create("assignments/assignment02-r-with-ai/submission/output", recursive = TRUE, showWarnings = FALSE)
+write_csv(education_summary, "assignments/assignment02-r-with-ai/submission/output/summary_table.csv")
+```
+
+## AI Audit Note
+
+I acknowledge the use of AI to assist with reading the CSV file, creating a custom function to calculate BMI mean, and clarifying the code. 

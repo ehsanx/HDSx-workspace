@@ -1,6 +1,6 @@
 ---
 title: "My First Report"
-author: "Your Name"
+author: "miriam"
 format:
   html:
     embed-resources: true
@@ -21,17 +21,15 @@ The code chunk below reads a small practice dataset from the `data/` folder and
 shows the first few rows.
 
 ```{r}
-patients <- read.csv("data/patients.csv")
-head(patients)
+# My first R calculation
+5 + 5
 ```
 
 ## A first chart
 
 ```{r}
-hist(patients$age,
-     main = "Age distribution of practice patients",
-     xlab = "Age (years)",
-     col  = "steelblue")
+# My second R calculation
+10 + 10
 ```
 
 ## Your turn
@@ -41,3 +39,6 @@ hist(patients$age,
 
 When you are happy with the result, **commit and sync** your work (the Week 2
 course page walks you through this), then submit your repository link on Canvas.
+
+## My Notes
+**I learned to launch a Codespace.I learned how to edit YAML. I learned how to use Markdown**
