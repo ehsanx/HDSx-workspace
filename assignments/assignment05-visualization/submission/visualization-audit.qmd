@@ -1,0 +1,127 @@
+# viz01
+
+```{r}
+3 + 3
+```
+
+```{r}
+library(readr)
+library(dplyr)
+
+candidate_paths <- c(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+nhanes_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(nhanes_path)) {
+  stop("Could not find examples/nhanes-equity/data/nhanes_equity_v6.csv")
+}
+
+nhanes_analysis <- read_csv(nhanes_path, show_col_types = FALSE)
+
+nhanes_analysis |>
+  summarise(
+    rows = n(),
+    missing_bmi = sum(is.na(BMI)),
+    missing_income = sum(is.na(IncomeGroup))
+  )
+```
+
+# viz02
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+candidate_paths <- c(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+
+glimpse(nhanes)
+```
+# my first plot
+
+```{r}
+ggplot(nhanes, aes(x = Age, y = Weight)) +
+  geom_point(alpha = 0.2) +
+  labs(
+    title = "Weight by age, NHANES Health Equity classroom dataset",
+    subtitle = "One point per record; unweighted, descriptive only",
+    x = "Age (years)",
+    y = "Weight (kg)"
+  ) +
+  theme_minimal()
+  ```
+
+# viz03
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+candidate_paths <- c(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(data_path)) {
+  stop("Could not find examples/nhanes-equity/data/nhanes_equity_v6.csv")
+}
+
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+```
+
+```{r}
+bmi_by_income_cycle <- nhanes |>
+  filter(
+    !is.na(BMI),
+    !is.na(IncomeGroup),
+    !is.na(Cycle),
+    Age >= 20,
+    Age <= 80
+  ) |>
+  group_by(Cycle, IncomeGroup) |>
+  summarise(
+    n = n(),
+    mean_bmi = mean(BMI),
+    .groups = "drop"
+  ) |>
+  filter(n >= 30)
+
+bmi_by_income_cycle
+```
+
+```{r}
+bmi_plot <- ggplot(
+  bmi_by_income_cycle,
+  aes(x = Cycle, y = mean_bmi, color = IncomeGroup, group = IncomeGroup)
+) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(
+    title = "Mean BMI by income group across NHANES cycle",
+    subtitle = "Adults age 20-80 in the prepared class dataset; unweighted descriptive summary",
+    x = "NHANES cycle",
+    y = "Mean BMI",
+    color = "Income group",
+    caption = "Unweighted descriptive summary; not a population estimate."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom",
+    plot.caption = element_text(margin = margin(t = 8))
+  )
+
+bmi_plot
+```
+
+

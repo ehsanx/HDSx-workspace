@@ -1,0 +1,71 @@
+# Load the NHANES CSV snapshot with a relative path 
+
+```{r}
+library(tidyverse)  # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+library(knitr)
+
+candidate_paths <- c(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(data_path)) {
+  stop("Could not find examples/nhanes-equity/data/nhanes_equity_v6.csv")
+}
+
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+```
+
+# Define and document an analysis cohort using age 20-80
+
+```{r}
+analysis_df <- nhanes |>
+  filter(Age >= 20, Age <= 80)
+
+cohort_counts <- tibble(
+  step = c("Prepared CSV rows", "Rows after age 20-80 restriction"),
+  n = c(nrow(nhanes), nrow(analysis_df))
+)
+
+kable(cohort_counts)
+```
+
+# Create a missingness table for key variables
+
+```{r}
+key_vars <- c("BMI", "Age", "IncomeGroup", "Gender", "Race", "Cycle")
+
+missingness <- tibble(variable = key_vars) |>
+  mutate(
+    missing_n = vapply(analysis_df[key_vars], function(x) sum(is.na(x)), numeric(1)),
+    missing_percent = round(100 * missing_n / nrow(analysis_df), 1)
+  )
+
+kable(missingness)
+```
+# Table-1 style summary
+
+```{r}
+mean_sd <- function(x) {
+  sprintf("%.1f (%.1f)", mean(x, na.rm = TRUE), sd(x, na.rm = TRUE))
+}
+
+table1 <- analysis_df |>
+  filter(!is.na(IncomeGroup)) |>
+  group_by(IncomeGroup) |>
+  summarise(
+    N = n(),
+    `BMI, mean (SD)` = mean_sd(BMI),
+    `Age, mean (SD)` = mean_sd(Age),
+    .groups = "drop"
+  )
+
+kable(table1)
+
+write_csv(table1, "output/table1.csv")
+```
+
+# Methods Note
+
+We used the prepared NHANES Health Equity classroom CSV snapshot and included records with age 20-80 in defining our analysis cohort. First, a missingness table was created to identify and check for missing values. We then summarized mean BMI and mean age including their respective SDs (standard deviations) stratified by income group using unweighted descriptive statistics. These summaries are non-causal as they only describe the prepared class dataset on the parameters described and should not be used for population estimates.

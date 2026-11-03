@@ -1,9 +1,10 @@
 ---
 title: "My First Report"
-author: "Your Name"
+author: "Kyle Fernandez"
 format:
   html:
     embed-resources: true
+    pdf: default
 ---
 
 ## Welcome to your practice report
@@ -41,3 +42,22 @@ hist(patients$age,
 
 When you are happy with the result, **commit and sync** your work (the Week 2
 course page walks you through this), then submit your repository link on Canvas.
+
+## My Notes
+
+- What I learned today in class
+
+```{r}
+summary(patients)
+```
+
+- I learned that to run R, I can highlight the code on my .qmd file and press Shift + Return to run it. The output shows up in my Terminal.
+- I also learned that, to render HTML, one way to do so is to right-click the .html file --> click "Download" --> open the downloaded file. This shows up as the pretty, rendered, document in a new tab on my browser. 
+
+## One Small Calculation
+
+```{r}
+3+3
+```
+
+
