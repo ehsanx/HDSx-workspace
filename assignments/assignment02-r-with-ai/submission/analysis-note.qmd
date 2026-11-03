@@ -1,0 +1,88 @@
+---
+title: "Assignment 2 Starter Analysis"
+format: html
+---
+
+## Setup
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)  # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+```
+
+## Load Data
+
+```{r}
+nhanes <- read_csv("examples/nhanes-equity/data/nhanes_equity_v6.csv", show_col_types = FALSE)
+```
+
+## Inspect
+
+```{r}
+dim(nhanes)
+names(nhanes)
+glimpse(nhanes)
+colSums(is.na(nhanes))
+```
+
+```{r}
+analysis_ready <- nhanes |>
+  select(IncomeGroup, BMI) |>
+  filter(!is.na(BMI), !is.na(IncomeGroup)) |>
+  mutate(IncomeGroup = factor(IncomeGroup)) |>
+  rename(income_group = IncomeGroup, bmi = BMI) |>
+  arrange(income_group, bmi)
+
+analysis_ready
+```
+
+## Summarize
+
+Replace this example with your own summary if you choose a different question.
+
+```{r}
+bmi_summary <- analysis_ready |>
+  group_by(income_group) |>
+  summarise(
+    n = n(),
+    mean_bmi = mean(bmi),
+    .groups = "drop"
+  )
+
+bmi_summary
+```
+
+## Function
+
+```{r}
+mean_with_n <- function(x) {
+  tibble(
+    n = sum(!is.na(x)),
+    mean = mean(x, na.rm = TRUE)
+  )
+}
+
+mean_with_n(nhanes$BMI)
+
+SD_with_n <- function(x) {
+  tibble(
+    n = sum(!is.na(x)),
+    sd = sd(x, na.rm = TRUE)
+  )
+}
+
+SD_with_n(nhanes$BMI)
+
+```
+
+## Save Output
+
+```{r}
+dir.create("assignments/assignment02-r-with-ai/submission/output", recursive = TRUE, showWarnings = FALSE)
+write_csv(bmi_summary, "assignments/assignment02-r-with-ai/submission/output/summary_table.csv")
+```
+
+## AI Audit Note
+
+The code for a cleaned, analysis-ready table was generated through the AI chat function on Github. AI was also used to debug and improve the code as it was not running correctly as it was not in a Quarto document. Upon amendment of the code, I verified through inspecting the output from the code. I also verified by running through the checklist outlined in the week 3 material.  

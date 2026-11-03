@@ -1,0 +1,1 @@
+The code for a cleaned, analysis-ready table was generated through the AI chat function on Github. AI was also used to debug and improve the code as it was not running correctly as it was not in a Quarto document. Upon amendment of the code, I verified through inspecting the output from the code. I also verified by running through the checklist outlined in the week 3 material.  
